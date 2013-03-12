@@ -7,27 +7,43 @@
  */
 class UserIdentity extends CUserIdentity
 {
+	// --- need to store the user's ID
+	private $_id;
+	
+	const ERROR_NONE=0;
+	const ERROR_USERNAME_PASSWORD_INVALID=1;
+	const ERROR_ACCOUNT_INACTIVE=2;
+
 	/**
 	 * Authenticates a user.
-	 * The example implementation makes sure if the username and password
-	 * are both 'demo'.
-	 * In practical applications, this should be changed to authenticate
-	 * against some persistent user identity storage (e.g. database).
 	 * @return boolean whether authentication succeeds.
 	 */
 	public function authenticate()
 	{
-		$users=array(
-			// username => password
-			'demo'=>'demo',
-			'admin'=>'admin',
-		);
-		if(!isset($users[$this->username]))
-			$this->errorCode=self::ERROR_USERNAME_INVALID;
-		elseif($users[$this->username]!==$this->password)
-			$this->errorCode=self::ERROR_PASSWORD_INVALID;
-		else
-			$this->errorCode=self::ERROR_NONE;
+		// --- Check the username against the database
+		$user = User::model()->findByAttributes(array('username'=>$this->username));
+		if ($user===null || $user->password !== sha1($this->password.strtolower($this->username))){
+			$this->errorCode=self::ERROR_USERNAME_PASSWORD_INVALID;
+		} else {
+			// --- Their credentials were correct but we need to do further checking based on account statuses
+			if($user->active != 1){ // --- Account has been set to inactive
+				$this->errorCode=self::ERROR_ACCOUNT_INACTIVE;
+			} else {
+				$this->errorCode=self::ERROR_NONE;
+				$this->_id = $user->id;
+			
+				// -- Generate a random key for a cookie and to be stored in the database for extra security in authentication
+				$user->login_key = $user->getKeyStr();
+				$user->saveAttributes(array('login_key'=> $user->login_key));
+				$this->setState('login_key', $user->login_key);
+			}
+		}
 		return !$this->errorCode;
 	}
+	
+	// --- Overrides the CUserIdentity class method which returns the username
+	public function getId()
+	{
+		return $this->_id;
+ 	}
 }
