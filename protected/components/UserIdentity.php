@@ -31,11 +31,6 @@ class UserIdentity extends CUserIdentity
 			} else {
 				$this->errorCode=self::ERROR_NONE;
 				$this->_id = $user->id;
-			
-				// -- Generate a random key for a cookie and to be stored in the database for extra security in authentication
-				$user->login_key = $user->getKeyStr();
-				$user->saveAttributes(array('login_key'=> $user->login_key));
-				$this->setState('login_key', $user->login_key);
 			}
 		}
 		return !$this->errorCode;
