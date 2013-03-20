@@ -25,6 +25,9 @@ return array(
 			'password'=>'hannah18',
 			// If removed, Gii defaults to localhost only. Edit carefully to taste.
 			'ipFilters'=>array('72.230.180.24','::1'),
+			'generatorPaths'=>array(
+                'application.gii',   // a path alias
+            ),
 		),
 	),
 
