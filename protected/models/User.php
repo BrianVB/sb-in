@@ -164,17 +164,4 @@ class User extends CActiveRecord
 			return false;
 		}
 	}
-
-	/**
-	 * Get a random string
-	 * Used for the login key for cookie security whenever logging in
-	 */
-	public function getKeyStr($len = 40){
-		$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
-		$string = '';    
-		for ($p = 0; $p < $len; $p++) {
-			$string .= $characters[mt_rand(0, strlen($characters)-1)];
-		}
-		return $string;	
-	}
 }
