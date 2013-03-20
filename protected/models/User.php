@@ -29,6 +29,14 @@ class User extends CActiveRecord
 		return 'user';
 	}
 
+    public function behaviors() {
+        return array(            
+            'SavedByBehavior' => array(
+                'class' => 'ext.behaviors.SavedByBehavior',
+            ),
+        );
+    }
+
 	/**
 	 * @return array validation rules for model attributes.
 	 */
