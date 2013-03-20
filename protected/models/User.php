@@ -29,6 +29,9 @@ class User extends CActiveRecord
 		return 'user';
 	}
 
+	/**
+	 * @return a list of behaviors associated with this model
+	 */
     public function behaviors() {
         return array(            
             'SavedByBehavior' => array(
