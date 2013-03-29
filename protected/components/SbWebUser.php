@@ -48,6 +48,7 @@ class SbWebUser extends CWebUser
 			// --- Save the current time as the last login time for the user
 			$user->last_login= new CDbExpression('NOW()');
 			$user->login_key = SbLib::getKeyStr();
+			$user->detachBehavior('SavedByBehavior');
 			$user->save();
 			
 			// --- Check for necessary cookies
