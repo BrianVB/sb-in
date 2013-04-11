@@ -22,8 +22,8 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($ingredient,'unit_measurement'); ?>
-		<?php echo $form->textField($ingredient,'unit_measurement',array('size'=>45,'maxlength'=>45)); ?>
+		<?php echo $form->label($ingredient,'type'); ?>
+		<?php echo $form->textField($ingredient,'type',array('size'=>45,'maxlength'=>45)); ?>
 	</div>
 
 	<div class="row">

@@ -46,16 +46,27 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 	'filter'=>$ingredient,
 	'columns'=>array(
 		'id',
+		array(
+			'name'=>'type',
+			'value'=>'$data->typeName',
+			'filter'=>$ingredient->getTypeList(),
+		),
 		'name',
-		'unit_measurement',
-		'create_time',
-		'update_time',
-		'created_by',
-		/*
-		'updated_by',
-		*/
+		array(
+			'name'=>'lovibond_search',
+			'value'=>'($data->grain) ? $data->grain->lovibond : ""',
+		),
+		array(
+			'name'=>'alpha_search',
+			'value'=>'($data->hop) ? $data->hop->alpha : ""',
+		),
+		array(
+			'name'=>'beta_search',
+			'value'=>'($data->hop) ? $data->hop->beta : ""',
+		),
 		array(
 			'class'=>'CButtonColumn',
+			'template'=>'{update}{delete}',	
 		),
 	),
 )); ?>

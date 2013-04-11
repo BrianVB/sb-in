@@ -31,6 +31,16 @@ class Ingredient extends CActiveRecord
 	const TYPE_YEAST = 2;
 	const TYPE_OTHER = 3;
 
+	/**
+	 * @var int The type that the grain was to being with. This is used so we can see if it changed when we are updating, and delete other related records;
+	 */
+	public $starting_type;
+
+	/**
+	 * @var string These variables are used when searching for grains to search by their subtype attributes
+	 */
+	public $alpha_search, $beta_search, $lovibond_search;
+
 
 	/**
 	 * Returns the static model of the specified AR class.
@@ -69,10 +79,11 @@ class Ingredient extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name, unit_measurement', 'length', 'max'=>45),
+			array('name', 'length', 'max'=>45),
+			array('type', 'in', 'range'=>array(self::TYPE_GRAIN,self::TYPE_HOP,self::TYPE_YEAST,self::TYPE_OTHER)),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, name, unit_measurement, create_time, update_time, created_by, updated_by', 'safe', 'on'=>'search'),
+			array('id, name, type, lovibond_search, alpha_search, beta_search, create_time, update_time, created_by, updated_by', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -100,7 +111,9 @@ class Ingredient extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'unit_measurement' => 'Unit of Measurement',
+			'lovibond_search' => '&deg; Lovibond',
+			'alpha_search' => '% Alpha Acid',
+			'beta_search' => '% Beta Acid',
 		);
 	}
 
@@ -114,10 +127,14 @@ class Ingredient extends CActiveRecord
 		// should not be searched.
 
 		$criteria=new CDbCriteria;
+		$criteria->with = array('grain','hop');
 
 		$criteria->compare('id',$this->id,true);
 		$criteria->compare('name',$this->name,true);
-		$criteria->compare('unit_measurement',$this->unit_measurement,true);
+		$criteria->compare('type',$this->type,true);
+		$criteria->compare('grain.lovibond',$this->lovibond_search,true);
+		$criteria->compare('hop.alpha',$this->alpha_search,true);
+		$criteria->compare('hop.beta',$this->beta_search,true);
 		$criteria->compare('create_time',$this->create_time,true);
 		$criteria->compare('update_time',$this->update_time,true);
 		$criteria->compare('created_by',$this->created_by,true);
@@ -140,5 +157,54 @@ class Ingredient extends CActiveRecord
 			self::TYPE_YEAST=>'Yeast',
 			self::TYPE_OTHER=>'Other',
 		);
+	}
+
+	/**
+	 * Checks if the ingredient type changed during an update and deletes the old related record if it did
+	 * @return array of ingredient types
+	 */
+	public function cleanIfNecessary()
+	{
+		if($this->starting_type != $this->type){
+			if($this->starting_type == self::TYPE_GRAIN){
+				$this->grain->delete();
+			} else if($this->starting_type == self::TYPE_HOP){
+				$this->hop->delete();
+			}
+		}
+	}
+
+	/**
+	 * Since the type is stored as an integer and we are using constants, we use this as a shortcut to get the type name
+	 * @return string Name of the type 
+	 */
+	public function getTypeName()
+	{
+		switch($this->type){
+			case self::TYPE_GRAIN:
+				return 'Grain';
+			case self::TYPE_HOP:
+				return 'Hop';
+			case self::TYPE_YEAST:
+				return 'Yeast';
+			case self::TYPE_OTHER:
+				return 'Other';
+		}
+	}
+
+	/**
+	 * Since the type is stored as an integer and we are using constants, we use this as a shortcut to get the type name
+	 * @return string Name of the type 
+	 */
+	public function getFullName()
+	{
+		switch($this->type){
+			case self::TYPE_GRAIN:
+				return $this->name.' '.$this->grain->lovibond;
+			case self::TYPE_HOP:
+				return $this->name.' '.$this->hop->alhpa.'%alpha '.$this->hop->beta.'%beta';
+			default:
+				return $this->name;
+		}
 	}	
 }

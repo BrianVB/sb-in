@@ -4,7 +4,7 @@
 
 $this->breadcrumbs=array(
 	'Ingredients'=>array('index'),
-	$ingredient->name=>array('view','id'=>$model->id),
+	$ingredient->name=>array('view','id'=>$ingredient->id),
 	'Update',
 );
 
@@ -16,4 +16,4 @@ $this->menu=array(
 
 <h1>Update Ingredient <?php echo $ingredient->id; ?></h1>
 
-<?php echo $this->renderPartial('_form', array('ingredient'=>$ingredient)); ?>
+<?php echo $this->renderPartial('_form', array('ingredient'=>$ingredient, 'hop'=>$hop, 'grain'=>$grain)); ?>

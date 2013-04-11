@@ -68,6 +68,7 @@ if($count>=7)
 ?>
 		array(
 			'class'=>'CButtonColumn',
+			'template'=>'{update}{delete}',			
 		),
 	),
 )); ?>

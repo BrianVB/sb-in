@@ -9,17 +9,34 @@ class IngredientController extends Controller
 	public function actionCreate()
 	{
 		$ingredient=new Ingredient;
+		$hop = new Hop;
+		$grain = new Grain;
 
 		if(isset($_POST['Ingredient'])){
 			$ingredient->attributes=$_POST['Ingredient'];
 			if($ingredient->save()){
-				Yii::app()->user->setFlash('success', "Ingredient saved");
-				$this->redirect(array('index'));
+				if($ingredient->type == Ingredient::TYPE_HOP){
+					$hop->ingredient_id=$ingredient->id;
+					$hop->attributes = $_POST['Hop'];
+					if($hop->save()){
+						Yii::app()->user->setFlash('success', "Ingredient saved");		
+						$this->redirect(array('index'));
+					}
+				} else if($ingredient->type == Ingredient::TYPE_GRAIN){
+					$grain->ingredient_id=$ingredient->id;
+					$grain->attributes = $_POST['Grain'];					
+					if($grain->save()){
+						Yii::app()->user->setFlash('success', "Ingredient saved");		
+						$this->redirect(array('index'));
+					}
+				}
 			}
 		}
 
 		$this->render('create',array(
 			'ingredient'=>$ingredient,
+			'hop'=>$hop,
+			'grain'=>$grain,
 		));
 	}
 
@@ -31,17 +48,43 @@ class IngredientController extends Controller
 	public function actionUpdate($id)
 	{
 		$ingredient=$this->loadModel($id);
+		
+		if($hop = $ingredient->hop){
+			$grain = new Grain;
+		} else if($grain = $ingredient->grain){
+			$hop = new Hop;
+		} else {
+			$grain = new Grain;
+			$hop = new Hop;
+		}
 
 		if(isset($_POST['Ingredient'])){
+			$ingredient->starting_type = $ingredient->type; // --- So we can see if it changed
 			$ingredient->attributes=$_POST['Ingredient'];
 			if($ingredient->save()){
-				Yii::app()->user->setFlash('success', "Ingredient updated");
-				$this->redirect(array('index'));
+				$ingredient->cleanIfNecessary();
+				if($ingredient->type == Ingredient::TYPE_HOP){
+					$hop->ingredient_id=$ingredient->id;
+					$hop->attributes = $_POST['Hop'];
+					if($hop->save()){
+						Yii::app()->user->setFlash('success', "Ingredient saved");		
+						$this->redirect(array('index'));
+					}
+				} else if($ingredient->type == Ingredient::TYPE_GRAIN){
+					$grain->ingredient_id=$ingredient->id;
+					$grain->attributes = $_POST['Grain'];					
+					if($grain->save()){
+						Yii::app()->user->setFlash('success', "Ingredient saved");		
+						$this->redirect(array('index'));
+					}
+				}
 			}
 		}
 
 		$this->render('update',array(
 			'ingredient'=>$ingredient,
+			'hop'=>$hop,
+			'grain'=>$grain,
 		));
 	}
 

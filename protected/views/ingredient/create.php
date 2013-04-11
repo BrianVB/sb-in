@@ -14,4 +14,4 @@ $this->menu=array(
 
 <h1>Create Ingredient</h1>
 
-<?php echo $this->renderPartial('_form', array('ingredient'=>$ingredient)); ?>
+<?php echo $this->renderPartial('_form', array('ingredient'=>$ingredient, 'hop'=>$hop, 'grain'=>$grain)); ?>
