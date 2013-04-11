@@ -24,6 +24,15 @@
 class Ingredient extends CActiveRecord
 {
 	/**
+	 * Constants for the ingredient types since they are tinyint() in the database
+	 */
+	const TYPE_GRAIN = 0;
+	const TYPE_HOP = 1;
+	const TYPE_YEAST = 2;
+	const TYPE_OTHER = 3;
+
+
+	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
 	 * @return Ing the static model class
@@ -91,13 +100,7 @@ class Ingredient extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id' => 'ID',
-			'name' => 'Name',
-			'unit_measurement' => 'Unit Measurement',
-			'create_time' => 'Create Time',
-			'update_time' => 'Update Time',
-			'created_by' => 'Created By',
-			'updated_by' => 'Updated By',
+			'unit_measurement' => 'Unit of Measurement',
 		);
 	}
 
@@ -124,4 +127,18 @@ class Ingredient extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+
+	/**
+	 * Retrieves a list of ingredient types for dropdowns
+	 * @return array of ingredient types
+	 */
+	public function getTypeList()
+	{
+		return array(
+			self::TYPE_GRAIN=>'Grain',
+			self::TYPE_HOP=>'Hop',
+			self::TYPE_YEAST=>'Yeast',
+			self::TYPE_OTHER=>'Other',
+		);
+	}	
 }
