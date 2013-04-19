@@ -201,9 +201,9 @@ class Ingredient extends CActiveRecord
 	{
 		switch($this->type){
 			case self::TYPE_GRAIN:
-				return $this->name.' '.$this->grain->lovibond;
+				return $this->name.' '.$this->grain->lovibond.'L';
 			case self::TYPE_HOP:
-				return $this->name.' '.$this->hop->alhpa.'%alpha '.$this->hop->beta.'%beta';
+				return $this->name.' '.$this->hop->alpha.'%alpha '.$this->hop->beta.'%beta';
 			default:
 				return $this->name;
 		}
