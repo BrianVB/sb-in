@@ -96,6 +96,7 @@ class Ingredient extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'assets' => array(self::HAS_MANY, 'Asset', 'ingredient_id'),
 			'brewIngredients' => array(self::HAS_MANY, 'BrewIngredient', 'ingredient_id'),
 			'grain' => array(self::HAS_ONE, 'Grain', 'ingredient_id'),
 			'hop' => array(self::HAS_ONE, 'Hop', 'ingredient_id'),
