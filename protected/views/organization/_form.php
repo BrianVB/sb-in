@@ -21,12 +21,6 @@
 		<?php echo $form->error($organization,'name'); ?>
 	</div>
 
-	<div class="row">
-		<?php echo $form->labelEx($organization,'update_by'); ?>
-		<?php echo $form->textField($organization,'update_by',array('size'=>10,'maxlength'=>10)); ?>
-		<?php echo $form->error($organization,'update_by'); ?>
-	</div>
-
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($organization->isNewRecord ? 'Create' : 'Save'); ?>
 	</div>

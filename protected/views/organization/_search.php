@@ -37,8 +37,8 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($organization,'update_by'); ?>
-		<?php echo $form->textField($organization,'update_by',array('size'=>10,'maxlength'=>10)); ?>
+		<?php echo $form->label($organization,'updated_by'); ?>
+		<?php echo $form->textField($organization,'updated_by',array('size'=>10,'maxlength'=>10)); ?>
 	</div>
 
 	<div class="row buttons">

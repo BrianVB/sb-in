@@ -50,7 +50,7 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 		'create_time',
 		'update_time',
 		'created_by',
-		'update_by',
+		'updated_by',
 		array(
 			'class'=>'CButtonColumn',
 			'template'=>'{update}{delete}',			
