@@ -77,6 +77,7 @@ class Asset extends CActiveRecord
 			'createdBy' => array(self::BELONGS_TO, 'User', 'created_by'),
 			'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
 			'lineItems' => array(self::HAS_MANY, 'LineItem', 'asset_id'),
+			'ingredient' => array(self::BELONGS_TO, 'Ingredient', 'ingredient_id'),
 		);
 	}
 
@@ -118,5 +119,13 @@ class Asset extends CActiveRecord
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
+	}
+
+	/**
+	 * @return stromg The name of the asset with details if it's an ingredient
+	 */
+	public function getFullName()
+	{
+		return ($this->ingredient) ? $this->name.' '.$this->ingredient->fullName : $this->name;
 	}
 }
