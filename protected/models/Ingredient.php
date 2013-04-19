@@ -26,10 +26,10 @@ class Ingredient extends CActiveRecord
 	/**
 	 * Constants for the ingredient types since they are tinyint() in the database
 	 */
-	const TYPE_GRAIN = 0;
-	const TYPE_HOP = 1;
-	const TYPE_YEAST = 2;
-	const TYPE_OTHER = 3;
+	const TYPE_GRAIN = 10;
+	const TYPE_HOP = 11;
+	const TYPE_YEAST = 12;
+	const TYPE_OTHER = 13;
 
 	/**
 	 * @var int The type that the grain was to being with. This is used so we can see if it changed when we are updating, and delete other related records;
@@ -79,6 +79,7 @@ class Ingredient extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
+			array('name, type', 'required'),
 			array('name', 'length', 'max'=>45),
 			array('type', 'in', 'range'=>array(self::TYPE_GRAIN,self::TYPE_HOP,self::TYPE_YEAST,self::TYPE_OTHER)),
 			// The following rule is used by search().

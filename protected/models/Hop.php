@@ -19,7 +19,7 @@
  * @property Ingredient $ingredient
  * @property User $updatedBy
  */
-class Hop extends CActiveRecord
+class Hop extends Ingredient
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -58,7 +58,8 @@ class Hop extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('ingredient_id', 'length', 'max'=>10),
+			array('ingredient_id', 'numerical', 'integerOnly'=>true),
+			array('alpha, beta', 'required'),
 			array('alpha, beta', 'length', 'max'=>4),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.

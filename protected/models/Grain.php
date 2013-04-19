@@ -19,7 +19,7 @@
  * @property User $updatedBy
  * @property RecipeGrain[] $recipeGrains
  */
-class Grain extends CActiveRecord
+class Grain extends Ingredient
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -58,8 +58,8 @@ class Grain extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('lovibond', 'numerical', 'integerOnly'=>true),
-			array('ingredient_id', 'length', 'max'=>10),
+			array('lovibond', 'type', 'type'=>'float', 'allowEmpty'=>false),
+			array('ingredient_id', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, ingredient_id, lovibond, create_time, update_time, created_by, updated_by', 'safe', 'on'=>'search'),
@@ -88,9 +88,8 @@ class Grain extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id' => 'ID',
 			'ingredient_id' => 'Ingredient',
-			'lovibond' => 'Lovibond',
+			'lovibond' => '&deg; Lovibond',
 		);
 	}
 

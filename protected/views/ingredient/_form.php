@@ -13,7 +13,7 @@
 
 	<p class="note">Fields with <span class="required">*</span> are required.</p>
 
-	<?php echo $form->errorSummary($ingredient); ?>
+	<?php echo $form->errorSummary(array($ingredient, $hop, $grain)); ?>
 
 	<div class="row">
 		<?php echo $form->labelEx($ingredient,'name'); ?>

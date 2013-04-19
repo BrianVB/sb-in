@@ -14,22 +14,29 @@ class IngredientController extends Controller
 
 		if(isset($_POST['Ingredient'])){
 			$ingredient->attributes=$_POST['Ingredient'];
-			if($ingredient->save()){
-				if($ingredient->type == Ingredient::TYPE_HOP){
-					$hop->ingredient_id=$ingredient->id;
-					$hop->attributes = $_POST['Hop'];
-					if($hop->save()){
-						Yii::app()->user->setFlash('success', "Ingredient saved");		
-						$this->redirect(array('index'));
-					}
-				} else if($ingredient->type == Ingredient::TYPE_GRAIN){
-					$grain->ingredient_id=$ingredient->id;
-					$grain->attributes = $_POST['Grain'];					
-					if($grain->save()){
-						Yii::app()->user->setFlash('success', "Ingredient saved");		
-						$this->redirect(array('index'));
-					}
+			$success = $ingredient->validate();
+
+			if($ingredient->type == Ingredient::TYPE_HOP){
+				$hop->ingredient_id=$ingredient->id;
+				$hop->attributes = $_POST['Hop'];
+				if($success = $hop->validate() && $success){
+					$ingredient->save();
+					$hop->save();
 				}
+			} else if($ingredient->type == Ingredient::TYPE_GRAIN){
+				$grain->ingredient_id=$ingredient->id;
+				$grain->attributes = $_POST['Grain'];					
+				if($success = $grain->validate() && $success){
+					$ingredient->save();
+					$grain->save();
+				}
+			} else if($success){
+				$ingredient->save();
+			}
+
+			if($success){
+				Yii::app()->user->setFlash('success', "Ingredient saved");		
+				$this->redirect(array('index'));				
 			}
 		}
 
@@ -61,24 +68,31 @@ class IngredientController extends Controller
 		if(isset($_POST['Ingredient'])){
 			$ingredient->starting_type = $ingredient->type; // --- So we can see if it changed
 			$ingredient->attributes=$_POST['Ingredient'];
-			if($ingredient->save()){
-				$ingredient->cleanIfNecessary();
-				if($ingredient->type == Ingredient::TYPE_HOP){
-					$hop->ingredient_id=$ingredient->id;
-					$hop->attributes = $_POST['Hop'];
-					if($hop->save()){
-						Yii::app()->user->setFlash('success', "Ingredient saved");		
-						$this->redirect(array('index'));
-					}
-				} else if($ingredient->type == Ingredient::TYPE_GRAIN){
-					$grain->ingredient_id=$ingredient->id;
-					$grain->attributes = $_POST['Grain'];					
-					if($grain->save()){
-						Yii::app()->user->setFlash('success', "Ingredient saved");		
-						$this->redirect(array('index'));
-					}
+			$success = $ingredient->validate();
+
+			if($ingredient->type == Ingredient::TYPE_HOP){
+				$hop->ingredient_id=$ingredient->id;
+				$hop->attributes = $_POST['Hop'];
+				if($success = $hop->validate() && $success){
+					$ingredient->save();
+					$hop->save();
 				}
+			} else if($ingredient->type == Ingredient::TYPE_GRAIN){
+				$grain->ingredient_id=$ingredient->id;
+				$grain->attributes = $_POST['Grain'];					
+				if($success = $grain->validate() && $success){
+					$ingredient->save();
+					$hop->save();
+				}
+			} else if($success){
+				$ingredient->save();
 			}
+
+			if($success){
+				$ingredient->cleanIfNecessary();
+				Yii::app()->user->setFlash('success', "Ingredient saved");		
+				$this->redirect(array('index'));				
+			}			
 		}
 
 		$this->render('update',array(

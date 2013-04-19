@@ -3,9 +3,6 @@
 /* @var $hop Hop */
 $form = new CActiveForm;
 ?>
-
-	<?php echo $form->errorSummary($hop); ?>
-
 	<div class="row">
 		<?php echo $form->labelEx($hop,'alpha'); ?>
 		<?php echo $form->textField($hop,'alpha',array('size'=>4,'maxlength'=>4)); ?>
