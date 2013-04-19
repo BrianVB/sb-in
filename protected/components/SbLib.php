@@ -20,4 +20,15 @@ class SbLib extends CComponent
 		}
 		return $string;	
 	}
+	
+	/**
+	 * @return array of different units of measurement
+	 */
+	static function getUnitsOfMeasurement(){
+		return array(
+			'oz'=>'oz',
+			'lbs'=>'lbs',
+			'pack'=>'pack',
+		);
+	}
 }
