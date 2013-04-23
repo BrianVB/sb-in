@@ -8,7 +8,10 @@
 
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'transaction-form',
-	'enableAjaxValidation'=>false,
+	'enableClientValidation'=>true,
+	'clientOptions'=>array(
+		'validateOnSubmit'=>true
+	)
 )); ?>
 
 	<p class="note">Fields with <span class="required">*</span> are required.</p>
@@ -17,9 +20,39 @@
 
 	<div class="row">
 		<?php echo $form->labelEx($transaction,'organization_id'); ?>
-		<?php echo $form->textField($transaction,'organization_id',array('size'=>10,'maxlength'=>10)); ?>
+		<?php echo $form->dropDownList(
+			$transaction,
+			'organization_id',
+			CHtml::listData(Organization::model()->findAll(array('order'=>'name')), 'id','name'),
+			array(
+				'empty'=>'Choose an Organization',
+			)
+		); ?>
 		<?php echo $form->error($transaction,'organization_id'); ?>
 	</div>
+
+	<table id="transaction-line-items">
+		<thead>
+			<th>Quantity</th>
+			<th>Asset</th>
+			<th>Price</th>
+			<th><?php echo CHtml::ajaxButton('Add', 
+				array('/transaction/addLineItem'),
+				array(
+					'data'=>'js:{ index: line_item_index }',
+					'success'=>'js:function(response){
+						$(response).appendTo("#transaction-line-items tbody");
+						line_item_index++;
+					}'
+				)
+			); ?></th>
+		</thead>
+		<tbody>
+		<?php foreach($line_items as $index=>$line_item): ?>
+			<?php $this->renderPartial('_line_item_subform', array('line_item'=>$line_item,'index'=>$index)); ?>
+		<?php endforeach; ?>
+		</tbody>
+	</table>
 
 	<div class="row">
 		<?php echo $form->labelEx($transaction,'amount'); ?>
@@ -40,6 +73,7 @@
 	</div>
 
 	<div class="row buttons">
+		<?php if($transaction->id){ $form->hiddenField($transaction,'id'); } ?>
 		<?php echo CHtml::submitButton($transaction->isNewRecord ? 'Create' : 'Save'); ?>
 	</div>
 
