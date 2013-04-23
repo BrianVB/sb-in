@@ -1,48 +1,45 @@
 <?php
 /* @var $this LineItemController */
-/* @var $lineitem LineItem */
-/* @var $form CActiveForm */
+/* @var $line_item LineItem */
+$form = new CActiveForm;
 ?>
 
-<div class="form">
+<tr>
+	<?php echo $form->errorSummary($line_item); ?>
+</tr>
 
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'line-item-form',
-	'enableAjaxValidation'=>false,
-)); ?>
+<tr class="line-item">
+	<td>
+		<?php echo $form->textField($line_item,'quantity',array('name'=>'LineItem['.$index.'][quantity]')); ?>
+		<?php echo $form->error($line_item,'quantity',array('name'=>'LineItem['.$index.'][quantity]')); ?>
+	</td>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
+	<td>
+		<?php echo $form->dropDownList(
+			$line_item,
+			'asset_id',
+			CHtml::listData(Asset::model()->findAll(array('order'=>'name')),'id','fullName'),
+			array(
+				'empty'=>'Select an item',
+				'name'=>'LineItem['.$index.'][asset_id]',
+			)
+		); ?>
+		<?php echo $form->error($line_item,'asset_id'); ?>
+	</td>
 
-	<?php echo $form->errorSummary($lineitem); ?>
+	<td>
+		<?php echo $form->textField($line_item,'unit_price',array('name'=>'LineItem['.$index.'][unit_price]')); ?>
+		<?php echo $form->error($line_item,'unit_price'); ?>
+	</td>
 
-	<div class="row">
-		<?php echo $form->labelEx($lineitem,'transaction_id'); ?>
-		<?php echo $form->textField($lineitem,'transaction_id',array('size'=>10,'maxlength'=>10)); ?>
-		<?php echo $form->error($lineitem,'transaction_id'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($lineitem,'asset_id'); ?>
-		<?php echo $form->textField($lineitem,'asset_id',array('size'=>10,'maxlength'=>10)); ?>
-		<?php echo $form->error($lineitem,'asset_id'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($lineitem,'quantity'); ?>
-		<?php echo $form->textField($lineitem,'quantity'); ?>
-		<?php echo $form->error($lineitem,'quantity'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($lineitem,'unit_price'); ?>
-		<?php echo $form->textField($lineitem,'unit_price',array('size'=>10,'maxlength'=>10)); ?>
-		<?php echo $form->error($lineitem,'unit_price'); ?>
-	</div>
-
-	<div class="row buttons">
-		<?php echo CHtml::submitButton($lineitem->isNewRecord ? 'Create' : 'Save'); ?>
-	</div>
-
-<?php $this->endWidget(); ?>
-
-</div><!-- form -->
+	<td class="row buttons">
+		<?php echo $form->hiddenField($line_item,'id',array('name'=>'LineItem['.$index.'][id]')); ?>
+		<?php echo CHtml::button(
+			'Remove',
+			array(
+				'class'=>'remove',
+				'data-id'=>($line_item->id)?:null,
+			)
+		); ?>
+	</td>
+</td>
