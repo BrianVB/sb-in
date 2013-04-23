@@ -3,6 +3,27 @@
 class SiteController extends Controller
 {
 	/**
+	 * Specifies the access control rules.
+	 * This method is used by the 'accessControl' filter.
+	 * @return array access control rules
+	 */
+	public function accessRules()
+	{
+		return array(
+			array('allow', 
+				'users'=>array('@'),
+			),
+			array('allow',
+				'actions'=>array('index','login'),  // allow all users to perform 'index' and 'login' actions
+				'users'=>array('*'),
+			),
+			array('deny',  // deny all users
+				'users'=>array('*'),
+			),
+		);
+	}
+
+	/**
 	 * This is the default 'index' action that is invoked
 	 * when an action is not explicitly requested by users.
 	 */
