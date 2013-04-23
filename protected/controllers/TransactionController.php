@@ -9,17 +9,35 @@ class TransactionController extends Controller
 	public function actionCreate()
 	{
 		$transaction=new Transaction;
+		$line_items = array();
 
 		if(isset($_POST['Transaction'])){
 			$transaction->attributes=$_POST['Transaction'];
 			if($transaction->save()){
-				Yii::app()->user->setFlash('success', "Transaction saved");
-				$this->redirect(array('index'));
+				$success = true;
+				foreach($_POST['LineItem'] as $line_item_data){
+					$line_item = new LineItem;
+					$line_item->transaction_id = $transaction->id;
+					$line_item->attributes = $line_item_data;
+					if(!$line_item->save()){
+						$success = false;
+					}
+				}	
+			} else {
+				$success = false;
 			}
-		}
+
+			if($success){
+				Yii::app()->user->setFlash('success', "Transaction saved");
+				$this->redirect(array('index'));			
+			}
+		} 
+
+		$line_items[] = new LineItem;
 
 		$this->render('create',array(
 			'transaction'=>$transaction,
+			'line_items'=>$line_items,
 		));
 	}
 
@@ -30,18 +48,32 @@ class TransactionController extends Controller
 	 */
 	public function actionUpdate($id)
 	{
-		$transaction=$this->loadModel($id);
+		$transaction=Transaction::model()->with(array('lineItems','organization'))->findByPk($id);
+		$line_items = $transaction->lineItems; // --- NOTE:: If we arrived here after submitting a transaction and deleting a line item, then that line item is deleted and not included at this point
 
 		if(isset($_POST['Transaction'])){
 			$transaction->attributes=$_POST['Transaction'];
 			if($transaction->save()){
-				Yii::app()->user->setFlash('success', "Transaction updated");
-				$this->redirect(array('index'));
+				$success = true;
+				foreach($line_items as $line_item){
+					$line_item->attributes = array_shift($_POST['LineItem']); // --- get the first element in the array. if we deleted one on the last page and got here again they should be in the $line_items variable in the same order as how we saved them on the transaction page
+					if(!$line_item->save()){
+						$success = false;
+					}
+				}	
+			} else {
+				$success = false;
 			}
+
+			if($success){
+				Yii::app()->user->setFlash('success', "Transaction saved");
+				$this->redirect(array('index'));			
+			}	
 		}
 
 		$this->render('update',array(
 			'transaction'=>$transaction,
+			'line_items'=>$line_items,
 		));
 	}
 
@@ -75,6 +107,22 @@ class TransactionController extends Controller
 			'transaction'=>$transaction,
 		));
 	}
+
+	/**
+	 * Adds a line item to the transaction form
+	 */
+	public function actionAddLineItem($index)
+	{
+		$this->renderPartial('_line_item_subform',array('index'=>$index,'line_item'=>new LineItem));
+	}
+
+	/**
+	 * Deletes a model for a line item
+	 */
+	public function actionDeleteLineItem($id)
+	{
+		LineItem::model()->findByPk($id)->delete();
+	}		
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
