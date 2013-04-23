@@ -4,7 +4,7 @@ class TransactionController extends Controller
 {
 	/**
 	 * Creates a new model.
-	 * If creation is successful, the browser will be redirected to the 'index' page.
+	 * If creation is successful, the browser will be redirected to the page to handle inventory
 	 */
 	public function actionCreate()
 	{
@@ -29,13 +29,46 @@ class TransactionController extends Controller
 
 			if($success){
 				Yii::app()->user->setFlash('success', "Transaction saved");
-				$this->redirect(array('index'));			
+				$this->redirect(array('inventory'));			
 			}
 		} 
 
 		$line_items[] = new LineItem;
 
 		$this->render('create',array(
+			'transaction'=>$transaction,
+			'line_items'=>$line_items,
+		));
+	}
+
+	/**
+	 * Handles creating assets after the transaction has been saved
+	 * If creation is successful, the browser will be redirected to the 'index' page.
+	 */
+	public function actionInventory($id)
+	{
+		$transaction=Transaction::model()->with(array('lineItems','organization'))->findByPk($id);
+		$line_items = $transaction->lineItems;
+		$assets = array();
+
+		if(isset($_POST['Asset'])){
+			$success = true;
+			foreach($_POST['Asset'] as $asset_data){
+				$asset = new Asset;
+				$asset->attribtues = $asset_data;
+				if(!$asset->save()){
+					$success = false;
+				}
+				$assets[] = $asset;
+			}
+
+			if($success){
+				Yii::app()->user->setFlash('success', "Inventory saved");
+				$this->redirect(array('index'));			
+			}
+		} 
+
+		$this->render('inventory',array(
 			'transaction'=>$transaction,
 			'line_items'=>$line_items,
 		));
