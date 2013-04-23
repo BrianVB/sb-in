@@ -61,7 +61,7 @@ class Transaction extends CActiveRecord
 		return array(
 			array('amount, organization_id', 'required'),
 			array('organization_id, amount, tax', 'numerical'),
-			array('date', 'date'),
+			array('date', 'date', 'format'=>'yyyy-MM-dd'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, organization_id, amount, tax, date, create_time, update_time, created_by, updated_by', 'safe', 'on'=>'search'),
