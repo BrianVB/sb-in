@@ -79,6 +79,7 @@ class LineItem extends CActiveRecord
 			'createdBy' => array(self::BELONGS_TO, 'User', 'created_by'),
 			'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
 			'transaction' => array(self::BELONGS_TO, 'Transaction', 'transaction_id'),
+			'asset' => array(self::HAS_ONE, 'Asset', 'line_item_id'),
 		);
 	}
 
