@@ -29,7 +29,7 @@ class TransactionController extends Controller
 
 			if($success){
 				Yii::app()->user->setFlash('success', "Transaction saved");
-				$this->redirect(array('inventory'));			
+				$this->redirect(array('inventory', 'id'=>$transaction->id));			
 			}
 		} 
 
@@ -147,6 +147,7 @@ class TransactionController extends Controller
 	public function actionAddLineItem($index)
 	{
 		$this->renderPartial('_line_item_subform',array('index'=>$index,'line_item'=>new LineItem));
+		Yii::app()->end();
 	}
 
 	/**
@@ -155,7 +156,28 @@ class TransactionController extends Controller
 	public function actionDeleteLineItem($id)
 	{
 		LineItem::model()->findByPk($id)->delete();
+		Yii::app()->end();
 	}		
+
+	/**
+	 * Returns JSON data about previous line-items to help auto-fill data in a transaction with existing data
+	 */
+	public function actionAjaxGuessLineItem($term)
+	{
+		$result = Yii::app()->db->createCommand("SELECT * FROM line_item WHERE name like '%$term%' LIMIT 10");
+		echo CJSON::encode($result);
+		Yii::app()->end();
+	}
+
+	/**
+	 * Returns JSON data about previous assets that have been saved to help auto-fill data about assets
+	 */
+	public function actionAjaxGuessIngredient($term)
+	{
+		$result = Yii::app()->db->createCommand("SELECT *, name as label FROM ingredient WHERE name like '%$term%' LIMIT 10")->queryAll();
+		echo CJSON::encode($result);
+		Yii::app()->end();
+	}	
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
