@@ -4,27 +4,21 @@
 $form = new CActiveForm;
 ?>
 
+<?php if($line_item->hasErrors()): ?>
 <tr>
-	<?php echo $form->errorSummary($line_item); ?>
+	<td colspan="4"><?php echo $form->errorSummary($line_item); ?></td>
 </tr>
+<?php endif; ?>
 
 <tr class="line-item">
 	<td>
 		<?php echo $form->textField($line_item,'quantity',array('name'=>'LineItem['.$index.'][quantity]')); ?>
-		<?php echo $form->error($line_item,'quantity',array('name'=>'LineItem['.$index.'][quantity]')); ?>
+		<?php echo $form->error($line_item,'quantity'); ?>
 	</td>
 
 	<td>
-		<?php echo $form->dropDownList(
-			$line_item,
-			'asset_id',
-			CHtml::listData(Asset::model()->findAll(array('order'=>'name')),'id','fullName'),
-			array(
-				'empty'=>'Select an item',
-				'name'=>'LineItem['.$index.'][asset_id]',
-			)
-		); ?>
-		<?php echo $form->error($line_item,'asset_id'); ?>
+		<?php echo $form->textField($line_item,'name',array('name'=>'LineItem['.$index.'][name]','class'=>'line-item-search')); ?>
+		<?php echo $form->error($line_item,'name'); ?>
 	</td>
 
 	<td>
