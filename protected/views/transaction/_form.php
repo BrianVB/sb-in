@@ -86,12 +86,14 @@
 Yii::app()->clientScript->registerCoreScript('jquery.ui');
 Yii::app()->clientScript->registerScript(
 	'line-item-name-search',
-	'jQuery(".line-item-search").autocomplete({
-		"minLength":"2",
-		"select":function(event, ui){
-			$("#LineItem_0_price").val(ui.item.price);
-		},
-		"source":"/transaction/ajaxGuessLineItem"
+	'$("body").on("keyup.line-item-search", ".line-item-search", function(){
+		$(this).autocomplete({
+			"minLength":"2",
+			"select":function(event, ui){
+				$("#LineItem_0_price").val(ui.item.price);
+			},
+			"source":"/transaction/ajaxGuessLineItem"
+		});
 	});',
 	CClientScript::POS_READY
 );
