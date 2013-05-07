@@ -22,6 +22,13 @@
 class Asset extends CActiveRecord
 {
 	/**
+	 * The names of our assets are usually either their ingredient name, or the name of it on the transaction (line-item name)
+	 * This variable is set up to get the name based on those conditions
+	 * @var string $name
+	 */
+	public $name;
+
+	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
 	 * @return Asset the static model class
@@ -76,7 +83,7 @@ class Asset extends CActiveRecord
 		return array(
 			'createdBy' => array(self::BELONGS_TO, 'User', 'created_by'),
 			'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
-			'lineItems' => array(self::HAS_MANY, 'LineItem', 'asset_id'),
+			'lineItem' => array(self::BELONGS_TO, 'LineItem', 'line_item_id'),
 			'ingredient' => array(self::BELONGS_TO, 'Ingredient', 'ingredient_id'),
 		);
 	}
@@ -120,12 +127,22 @@ class Asset extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+	
+	/**
+	 * @return string The name of the asset with details if it's an ingredient
+	 */
+	public function getName()
+	{
+		return ($this->ingredient) ? $this->ingredient->name : $this->lineItem->name;
+	}
 
 	/**
-	 * @return stromg The name of the asset with details if it's an ingredient
+	 * @return string The name of the asset with details if it's an ingredient
 	 */
 	public function getFullName()
 	{
-		return ($this->ingredient) ? $this->name.' '.$this->ingredient->fullName : $this->name;
+		return ($this->ingredient) ? $this->ingredient->fullName : $this->lineItem->name;
 	}
+
+
 }
