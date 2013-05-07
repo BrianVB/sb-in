@@ -34,7 +34,7 @@
 	<table id="transaction-line-items">
 		<thead>
 			<th>Quantity</th>
-			<th>Asset</th>
+			<th>Item</th>
 			<th>Price</th>
 			<th><?php echo CHtml::ajaxButton('Add', 
 				array('/transaction/addLineItem'),
