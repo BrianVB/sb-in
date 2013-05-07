@@ -59,8 +59,10 @@ class LineItem extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
+			array('name', 'required'),
+			array('name', 'length', 'max'=>255),
 			array('quantity', 'numerical', 'integerOnly'=>true),
-			array('transaction_id, asset_id, unit_price', 'numerical'),
+			array('transaction_id, unit_price', 'numerical'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, transaction_id, asset_id, quantity, unit_price, create_time, update_time, created_by, updated_by', 'safe', 'on'=>'search'),
@@ -75,7 +77,6 @@ class LineItem extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'asset' => array(self::BELONGS_TO, 'Asset', 'asset_id'),
 			'createdBy' => array(self::BELONGS_TO, 'User', 'created_by'),
 			'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
 			'transaction' => array(self::BELONGS_TO, 'Transaction', 'transaction_id'),
@@ -120,6 +121,32 @@ class LineItem extends CActiveRecord
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
+		));
+	}
+
+	/**
+	 * @return int id of the ingredient if a good guess could be made for one
+	 */
+	public function guessIngredient()
+	{
+		return Ingredient::model()->find(array(
+			'with'=>array(
+				'assets'=>array(
+					'select'=>false,
+					'together'=>true,
+				),
+				'assets.lineItem'=>array(
+					'condition'=>'lineItem.name=:name',
+					'params'=>array(
+						':name'=>$this->name
+					),
+					'together'=>true,
+					'select'=>false,
+				)
+			),
+			'order'=>'`lineItem`.`create_time` DESC',
+			'limit'=>1, // --- The combination of these make it so we get the most recent one before the one that was just created
+			'offset'=>1
 		));
 	}
 }
