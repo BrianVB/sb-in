@@ -80,3 +80,20 @@
 <?php $this->endWidget(); ?>
 
 </div><!-- form -->
+
+
+<?php
+Yii::app()->clientScript->registerCoreScript('jquery.ui');
+Yii::app()->clientScript->registerScript(
+	'line-item-name-search',
+	'jQuery(".line-item-search").autocomplete({
+		"minLength":"2",
+		"select":function(event, ui){
+			$("#LineItem_0_price").val(ui.item.price);
+		},
+		"source":"/transaction/ajaxGuessLineItem"
+	});',
+	CClientScript::POS_READY
+);
+
+?>
