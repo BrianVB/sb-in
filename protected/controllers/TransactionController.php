@@ -17,8 +17,18 @@ class TransactionController extends Controller
 				$success = true;
 				foreach($_POST['LineItem'] as $line_item_data){
 					$line_item = new LineItem;
-					$line_item->transaction_id = $transaction->id;
 					$line_item->attributes = $line_item_data;
+
+					if(!empty($line_item->id)){
+						// --- If it is set change this so it does an update and not an insert
+						$line_item->isNewRecord = false;
+					} else {
+						// --- If it's new assign it to this transaction
+						$line_item->transaction_id = $transaction->id;
+					}
+
+					$line_items[] = $line_item;
+
 					if(!$line_item->save()){
 						$success = false;
 					}
@@ -31,11 +41,62 @@ class TransactionController extends Controller
 				Yii::app()->user->setFlash('success', "Transaction saved");
 				$this->redirect(array('inventory', 'id'=>$transaction->id));			
 			}
-		} 
-
-		$line_items[] = new LineItem;
+		} else {
+			$line_items[] = new LineItem;
+		}
 
 		$this->render('create',array(
+			'transaction'=>$transaction,
+			'line_items'=>$line_items,
+		));
+	}
+
+	/**
+	 * Updates a particular model.
+	 * If update is successful, the browser will be redirected to the 'index' page.
+	 * @param integer $id the ID of the model to be updated
+	 */
+	public function actionUpdate($id)
+	{
+		$transaction=Transaction::model()->with(array('lineItems','organization'))->findByPk($id);
+		$line_items = array(); 
+
+		if(isset($_POST['Transaction'])){
+			$transaction->attributes=$_POST['Transaction'];
+			if($transaction->save()){
+				$success = true;
+				foreach($_POST['LineItem'] as $line_item_data){
+					$line_item  = new LineItem;
+					$line_item->attributes = $line_item_data;
+
+					if(!empty($line_item->id)){
+						// --- If it is set change this so it does an update and not an insert
+						$line_item->isNewRecord = false;
+					} else {
+						// --- If it's new assign it to this transaction
+						$line_item->transaction_id = $transaction->id;
+					}
+					
+					$line_items[] = $line_item; 
+
+					if(!$line_item->save()){
+						$success = false;
+					}
+				}	
+			} else {
+				$success = false;
+			}
+
+			if($success){
+				Yii::app()->user->setFlash('success', "Transaction saved");
+				$this->redirect(array('index'));			
+			}	
+		} else {
+			// --- If we didn't just submit the form use the line items already in this transaction
+			$line_items = $transaction->lineItems;
+		}
+
+		$this->render('update',array(
 			'transaction'=>$transaction,
 			'line_items'=>$line_items,
 		));
@@ -69,42 +130,6 @@ class TransactionController extends Controller
 		} 
 
 		$this->render('inventory',array(
-			'transaction'=>$transaction,
-			'line_items'=>$line_items,
-		));
-	}
-
-	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'index' page.
-	 * @param integer $id the ID of the model to be updated
-	 */
-	public function actionUpdate($id)
-	{
-		$transaction=Transaction::model()->with(array('lineItems','organization'))->findByPk($id);
-		$line_items = $transaction->lineItems; // --- NOTE:: If we arrived here after submitting a transaction and deleting a line item, then that line item is deleted and not included at this point
-
-		if(isset($_POST['Transaction'])){
-			$transaction->attributes=$_POST['Transaction'];
-			if($transaction->save()){
-				$success = true;
-				foreach($line_items as $line_item){
-					$line_item->attributes = array_shift($_POST['LineItem']); // --- get the first element in the array. if we deleted one on the last page and got here again they should be in the $line_items variable in the same order as how we saved them on the transaction page
-					if(!$line_item->save()){
-						$success = false;
-					}
-				}	
-			} else {
-				$success = false;
-			}
-
-			if($success){
-				Yii::app()->user->setFlash('success', "Transaction saved");
-				$this->redirect(array('index'));			
-			}	
-		}
-
-		$this->render('update',array(
 			'transaction'=>$transaction,
 			'line_items'=>$line_items,
 		));
@@ -146,7 +171,8 @@ class TransactionController extends Controller
 	 */
 	public function actionAddLineItem($index)
 	{
-		$this->renderPartial('_line_item_subform',array('index'=>$index,'line_item'=>new LineItem));
+		Yii::app()->clientscript->scriptMap['jquery.js'] = false;
+		$this->renderPartial('_line_item_subform',array('index'=>$index,'line_item'=>new LineItem), false, true);
 		Yii::app()->end();
 	}
 
@@ -164,7 +190,7 @@ class TransactionController extends Controller
 	 */
 	public function actionAjaxGuessLineItem($term)
 	{
-		$result = Yii::app()->db->createCommand("SELECT * FROM line_item WHERE name like '%$term%' LIMIT 10");
+		$result = Yii::app()->db->createCommand("SELECT DISTINCT name as label, line_item.* FROM line_item WHERE name like '%$term%' ORDER BY create_time DESC LIMIT 10")->queryAll();
 		echo CJSON::encode($result);
 		Yii::app()->end();
 	}

@@ -27,7 +27,11 @@ $form = new CActiveForm;
 	</td>
 
 	<td class="row buttons">
+		<?php if(!$line_item->isNewRecord)): ?>
 		<?php echo $form->hiddenField($line_item,'id',array('name'=>'LineItem['.$index.'][id]')); ?>
+		<?php echo $form->hiddenField($line_item,'transaction_id',array('name'=>'LineItem['.$index.'][transaction_id]')); ?>
+		<?php endif; ?>
+
 		<?php echo CHtml::button(
 			'Remove',
 			array(

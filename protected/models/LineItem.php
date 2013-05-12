@@ -63,6 +63,7 @@ class LineItem extends CActiveRecord
 			array('name', 'length', 'max'=>255),
 			array('quantity', 'numerical', 'integerOnly'=>true),
 			array('transaction_id, unit_price', 'numerical'),
+			array('id', 'numerical'), // --- So we can assign it while updating and not create a new record
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, transaction_id, asset_id, quantity, unit_price, create_time, update_time, created_by, updated_by', 'safe', 'on'=>'search'),
